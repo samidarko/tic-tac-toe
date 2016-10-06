@@ -66,6 +66,8 @@ def check_vertical(board, box, row, edge_size):
     :type board: list
     :param box: last user move (or any other)
     :type box: int
+    :param row: row index
+    :type row: int
     :param edge_size: edge size of the game board
     :return: list of boxes
     """
@@ -74,19 +76,20 @@ def check_vertical(board, box, row, edge_size):
     end = box + (edge_size-(row+1)) * edge_size if row+1 > (edge_size-2) else box + 2 * edge_size
     return [board[index] for index in range(start, end+1, edge_size)]
 
-# def check_diagonal():
-#     """
-#     Extract a diagonals vector base on the box value and board boundaries
-#     :param board: state of the current game
-#     :type board: list
-#     :param box: last user move (or any other)
-#     :type box: int
-#     :param row: row index
-#     :type row: int
-#     :param edge_size: edge size of the game board
-#     :return: list of boxes
-#     """
-#     pass
+
+def check_diagonal(board, box, row, edge_size):
+    """
+    Extract a diagonals vector base on the box value and board boundaries
+    :param board: state of the current game
+    :type board: list
+    :param box: last user move (or any other)
+    :type box: int
+    :param row: row index
+    :type row: int
+    :param edge_size: edge size of the game board
+    :return: list of boxes
+    """
+    pass
 
 
 def check_result(board, edge_size, box, marker):
