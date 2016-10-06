@@ -22,22 +22,6 @@ def draw_board(board, edge_size):
     return output
 
 
-def check_horizontal(board, box, row, edge_size):
-    """
-    Extract an horizontal vector base on the box value and board boundaries
-    :param board: state of the current game
-    :type board: list
-    :param box: last user move (or any other)
-    :type box: int
-    :param row: row index
-    :type row: int
-    :param edge_size: edge size of the game board
-    :type edge_size: int
-    :return: list of boxes
-    """
-    return board[max(row*edge_size, box-2):min((row+1)*edge_size, box+3)]
-
-
 def check_vector(vector, marker):
     """
     Check if vector contains a sequence of 3 consecutive markers
@@ -59,9 +43,9 @@ def check_vector(vector, marker):
         return False
 
 
-def check_vertical(board, box, row, edge_size):
+def check_horizontal(board, box, row, edge_size):
     """
-    Extract a vertical vector base on the box value and board boundaries
+    Extract an horizontal vector base on the box value and board boundaries
     :param board: state of the current game
     :type board: list
     :param box: last user move (or any other)
@@ -69,9 +53,26 @@ def check_vertical(board, box, row, edge_size):
     :param row: row index
     :type row: int
     :param edge_size: edge size of the game board
+    :type edge_size: int
     :return: list of boxes
     """
-    pass
+    return board[max(row*edge_size, box-2):min((row+1)*edge_size, box+3)]
+
+
+def check_vertical(board, box, row, edge_size):
+    """
+    Extract a vertical vector base on the box value and board boundaries
+    :param board: state of the current game
+    :type board: list
+    :param box: last user move (or any other)
+    :type box: int
+    :param edge_size: edge size of the game board
+    :return: list of boxes
+    """
+    # I probably should have rotate the matrix and reuse check_horizontal instead -_-'
+    start = box - row * edge_size if row < 2 else box - 2 * edge_size
+    end = box + (edge_size-(row+1)) * edge_size if row+1 > (edge_size-2) else box + 2 * edge_size
+    return [board[index] for index in range(start, end+1, edge_size)]
 
 # def check_diagonal():
 #     """
@@ -103,12 +104,12 @@ def check_result(board, edge_size, box, marker):
     """
     box -= 1
     row = box // edge_size
-    col = box - row * edge_size
+    # col = box - row * edge_size
 
     if check_vector(check_horizontal(board, box, row, edge_size), marker):
         return True
-    # elif check_vertical():
-    #     return True
+    elif check_vector(check_vertical(board, box, row, edge_size), marker):
+        return True
     # elif check_diagonal():
     #     return True
     else:
@@ -165,4 +166,4 @@ if __name__ == '__main__':
     #         players.append(name)
     #         player += 1
 
-    game(['John', 'Paul'], 3)
+    game(['John', 'Paul'], 4)

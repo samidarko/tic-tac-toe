@@ -1,5 +1,5 @@
 import unittest
-from main import draw_board, check_horizontal, check_vector
+from main import draw_board, check_horizontal, check_vector, check_vertical
 
 
 class TestDrawBoard(unittest.TestCase):
@@ -72,6 +72,32 @@ class TestCheckHorizontal(unittest.TestCase):
         self.assertEqual(check_horizontal(board, box=5, row=0, edge_size=edge_size), [4, 5, 6, 7, 8])
         self.assertEqual(check_horizontal(board, box=6, row=0, edge_size=edge_size), [5, 6, 7, 8])
         self.assertEqual(check_horizontal(board, box=7, row=0, edge_size=edge_size), [6, 7, 8])
+
+
+class TestCheckVertical(unittest.TestCase):
+    def test_3x3(self):
+        edge_size = 3
+        board_size = edge_size * edge_size
+        board = list(range(1, board_size + 1))
+        for box, row in zip([0, 3, 6], [0, 1, 2]):
+            self.assertEqual(check_vertical(board, box=box, row=row, edge_size=edge_size), [1, 4, 7])
+        for box, row in zip([1, 4, 7], [0, 1, 2]):
+            self.assertEqual(check_vertical(board, box=box, row=row, edge_size=edge_size), [2, 5, 8])
+        for box, row in zip([2, 5, 8], [0, 1, 2]):
+            self.assertEqual(check_vertical(board, box=box, row=row, edge_size=edge_size), [3, 6, 9])
+
+    def test_8x8(self):
+        edge_size = 8
+        board_size = edge_size * edge_size
+        board = list(range(1, board_size + 1))
+        self.assertEqual(check_vertical(board, box=2, row=0, edge_size=edge_size), [3, 11, 19])
+        self.assertEqual(check_vertical(board, box=10, row=1, edge_size=edge_size), [3, 11, 19, 27])
+        self.assertEqual(check_vertical(board, box=18, row=2, edge_size=edge_size), [3, 11, 19, 27, 35])
+        self.assertEqual(check_vertical(board, box=26, row=3, edge_size=edge_size), [11, 19, 27, 35, 43])
+        self.assertEqual(check_vertical(board, box=34, row=4, edge_size=edge_size), [19, 27, 35, 43, 51])
+        self.assertEqual(check_vertical(board, box=42, row=5, edge_size=edge_size), [27, 35, 43, 51, 59])
+        self.assertEqual(check_vertical(board, box=50, row=6, edge_size=edge_size), [35, 43, 51, 59])
+        self.assertEqual(check_vertical(board, box=58, row=7, edge_size=edge_size), [43, 51, 59])
 
 
 if __name__ == '__main__':
