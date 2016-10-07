@@ -42,35 +42,33 @@ def check_vector(vector, marker):
         return False
 
 
-def check_horizontal(board, box, row, edge_size):
+def check_horizontal(board, box, edge_size):
     """
     Extract an horizontal vector base on the box value and board boundaries
     :param board: state of the current game
     :type board: list
     :param box: last user move (or any other)
     :type box: int
-    :param row: row index
-    :type row: int
     :param edge_size: edge size of the game board
     :type edge_size: int
     :return: list of boxes
     """
+    row = box // edge_size
     return board[max(row * edge_size, box - 2):min((row + 1) * edge_size, box + 3)]
 
 
-def check_vertical(board, box, row, edge_size):
+def check_vertical(board, box, edge_size):
     """
     Extract a vertical vector base on the box value and board boundaries
     :param board: state of the current game
     :type board: list
     :param box: last user move (or any other)
     :type box: int
-    :param row: row index
-    :type row: int
     :param edge_size: edge size of the game board
     :return: list of boxes
     """
     # I probably should have rotate the matrix and reuse check_horizontal instead -_-'
+    row = box // edge_size
     start = box - row * edge_size if row < 2 else box - 2 * edge_size
     end = box + (edge_size - (row + 1)) * edge_size if row + 1 > (edge_size - 2) else box + 2 * edge_size
     return [board[index] for index in range(start, end + 1, edge_size)]
@@ -86,29 +84,32 @@ def check_diagonal(board, box, edge_size):
     :param edge_size: edge size of the game board
     :return: a tuple of two lists of boxes
     """
-    board_size = edge_size*edge_size
+    row = box // edge_size
+    col = box - row * edge_size
 
     # vector NW-SE
-    nw_se = [
-        box - 2 * edge_size - 2,
-        box - 1 * edge_size - 1,
-        box,
-        box + 1 * edge_size + 1,
-        box + 2 * edge_size + 2,
-    ]
-    print(nw_se)
-    nw_se = filter(lambda x: 0 <= x < board_size, nw_se)
+    nw_se = []
+    if (row - 2) >= 0 and (col - 2) >= 0:
+        nw_se.append(box - 2 * edge_size - 2)
+    if (row - 1) >= 0 and (col - 1) >= 0:
+        nw_se.append(box - 1 * edge_size - 1)
+    nw_se.append(box)
+    if (row + 1) < edge_size and (col + 1) < edge_size:
+        nw_se.append(box + 1 * edge_size + 1)
+    if (row + 2) < edge_size and (col + 2) < edge_size:
+        nw_se.append(box + 2 * edge_size + 2)
 
     # vector SW-NE
-    sw_ne = [
-        box + 2 * edge_size - 2,
-        box + 1 * edge_size - 1,
-        box,
-        box - 1 * edge_size + 1,
-        box - 2 * edge_size + 2,
-    ]
-    print(sw_ne)
-    sw_ne = filter(lambda x: edge_size-1 <= x < board_size-(edge_size-1), sw_ne)
+    sw_ne = []
+    if (row + 2) < edge_size and (col - 2) >= 0:
+        sw_ne.append(box + 2 * edge_size - 2)
+    if (row + 1) < edge_size and (col - 1) >= 0:
+        sw_ne.append(box + 1 * edge_size - 1)
+    sw_ne.append(box)
+    if (row - 1) >= 0 and (col + 1) < edge_size:
+        sw_ne.append(box - 1 * edge_size + 1)
+    if (row - 2) >= 0 and (col + 2) < edge_size:
+        sw_ne.append(box - 2 * edge_size + 2)
 
     return [board[index] for index in nw_se], [board[index] for index in sw_ne]
 
@@ -127,12 +128,10 @@ def check_result(board, edge_size, box, marker):
     :return:
     """
     box -= 1
-    row = box // edge_size
-    # col = box - row * edge_size
 
-    if check_vector(check_horizontal(board, box, row, edge_size), marker):
+    if check_vector(check_horizontal(board, box, edge_size), marker):
         return True
-    elif check_vector(check_vertical(board, box, row, edge_size), marker):
+    elif check_vector(check_vertical(board, box, edge_size), marker):
         return True
     # elif check_diagonal():
     #     return True
