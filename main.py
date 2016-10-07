@@ -1,3 +1,6 @@
+import subprocess
+
+
 def draw_board(board, edge_size):
     """
     Display the board in the console
@@ -125,18 +128,17 @@ def check_result(board, edge_size, box, marker):
     :type box: int
     :param marker: enum char 'X' or 'O'
     :type marker: str
-    :return:
+    :return: string containing wining vector alignment
     """
     box -= 1
-
     if check_vector(check_horizontal(board, box, edge_size), marker):
-        return True
+        return 'horizontal'
     elif check_vector(check_vertical(board, box, edge_size), marker):
-        return True
-    # elif check_diagonal():
-    #     return True
+        return 'vertical'
+    elif any([check_vector(vector, marker) for vector in check_diagonal(board, box, edge_size)]):
+        return 'diagonal'
     else:
-        return False
+        return ''
 
 
 def game(players, edge_size):
@@ -157,14 +159,16 @@ def game(players, edge_size):
     while True:
         print('{0}, choose a box to place an \'{1}\' into:'.format(players[player], markers[player]))
         box = input('>> ')
-        if box.isnumeric():
+        subprocess.call('clear')
+        if box.isnumeric() and int(box) < board_size:
             box = int(box)
             if isinstance(board[box - 1], int):
                 moves += 1
                 board[box - 1] = markers[player]
                 print(draw_board(board, edge_size))
-                if check_result(board, edge_size, box, markers[player]):
-                    print('Congratulations {0}! You have won.'.format(players[player]))
+                result = check_result(board, edge_size, box, markers[player])
+                if result:
+                    print('Congratulations {0}! You have won. ({1})'.format(players[player], result))
                     break
                 if moves == board_size:
                     print('Sorry guys but that\'s a draw')
@@ -172,22 +176,33 @@ def game(players, edge_size):
                 else:
                     player = int(not player)
             else:
+                print(draw_board(board, edge_size))
                 print('This box is already played, please select a new one')
         else:
+            print(draw_board(board, edge_size))
             print('Please enter a number between 1 and {0}'.format(board_size))
 
 
 if __name__ == '__main__':
-    # TODO input N (minimum 2)
-    # TODO add assert and test param imput
-    # TODO display the direction of who won
-    # players = ['John', 'Paul'] # TODO set to []
-    # player = 1
-    # while player < 3:
-    #     print('Enter name for Player {0}: '.format(player))
-    #     name = input('>> ')
-    #     if name:
-    #         players.append(name)
-    #         player += 1
+    subprocess.call('clear')
+    print('Enter edge game dimension (default: 3): ')
+    n = input('>> ')
+    if n.isnumeric():
+        n = int(n)
+        if n < 3:
+            n = 3
+    else:
+        n = 3
 
-    game(['John', 'Paul'], 3)
+    subprocess.call('clear')
+
+    names = []
+    while len(names) < 2:
+        print('Enter name for Player {0}: '.format(len(names)+1))
+        name = input('>> ')
+        if name:
+            names.append(name)
+
+        subprocess.call('clear')
+
+    game(names, n)
