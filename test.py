@@ -1,5 +1,5 @@
 import unittest
-from main import draw_board, check_horizontal, check_vector, check_vertical
+from main import draw_board, check_horizontal, check_vector, check_vertical, check_diagonal
 
 
 class TestDrawBoard(unittest.TestCase):
@@ -98,6 +98,15 @@ class TestCheckVertical(unittest.TestCase):
         self.assertEqual(check_vertical(board, box=42, row=5, edge_size=edge_size), [27, 35, 43, 51, 59])
         self.assertEqual(check_vertical(board, box=50, row=6, edge_size=edge_size), [35, 43, 51, 59])
         self.assertEqual(check_vertical(board, box=58, row=7, edge_size=edge_size), [43, 51, 59])
+
+
+class TestCheckDiagonal(unittest.TestCase):
+    def test_3x3(self):
+        edge_size = 3
+        board_size = edge_size * edge_size
+        board = list(range(1, board_size + 1))
+        # self.assertEqual(check_diagonal(board, box=4, edge_size=edge_size),  ([1, 5, 9], [7, 5, 3]))
+        self.assertEqual(check_diagonal(board, box=0, edge_size=edge_size),  ([1, 5, 9], [7, 5, 3]))
 
 
 if __name__ == '__main__':

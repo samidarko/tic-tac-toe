@@ -1,4 +1,3 @@
-
 def draw_board(board, edge_size):
     """
     Display the board in the console
@@ -9,15 +8,15 @@ def draw_board(board, edge_size):
     :type edge_size: int
     :return: board display
     """
-    board_size = edge_size*edge_size
+    board_size = edge_size * edge_size
     output = ''
     for offset in range(0, board_size, edge_size):
         row = ''
-        for i, item in enumerate(board[offset:offset+edge_size]):
-            row += '{0:^5}{1}'.format(item, '|' if i < edge_size-1 else '')
+        for i, item in enumerate(board[offset:offset + edge_size]):
+            row += '{0:^5}{1}'.format(item, '|' if i < edge_size - 1 else '')
         # we don't want to print the horizontal separator for last row
-        if offset < board_size-edge_size:
-            row += '\n' + '-'*len(row) + '\n'
+        if offset < board_size - edge_size:
+            row += '\n' + '-' * len(row) + '\n'
         output += row
     return output
 
@@ -36,8 +35,8 @@ def check_vector(vector, marker):
         return False
     else:
         i = 0
-        while i+3 < len(vector)+1:
-            if vector[i:i+3] == [marker]*3:
+        while i + 3 < len(vector) + 1:
+            if vector[i:i + 3] == [marker] * 3:
                 return True
             i += 1
         return False
@@ -56,7 +55,7 @@ def check_horizontal(board, box, row, edge_size):
     :type edge_size: int
     :return: list of boxes
     """
-    return board[max(row*edge_size, box-2):min((row+1)*edge_size, box+3)]
+    return board[max(row * edge_size, box - 2):min((row + 1) * edge_size, box + 3)]
 
 
 def check_vertical(board, box, row, edge_size):
@@ -73,23 +72,45 @@ def check_vertical(board, box, row, edge_size):
     """
     # I probably should have rotate the matrix and reuse check_horizontal instead -_-'
     start = box - row * edge_size if row < 2 else box - 2 * edge_size
-    end = box + (edge_size-(row+1)) * edge_size if row+1 > (edge_size-2) else box + 2 * edge_size
-    return [board[index] for index in range(start, end+1, edge_size)]
+    end = box + (edge_size - (row + 1)) * edge_size if row + 1 > (edge_size - 2) else box + 2 * edge_size
+    return [board[index] for index in range(start, end + 1, edge_size)]
 
 
-def check_diagonal(board, box, row, edge_size):
+def check_diagonal(board, box, edge_size):
     """
-    Extract a diagonals vector base on the box value and board boundaries
+    Extract two diagonals vector base on the box value and board boundaries
     :param board: state of the current game
     :type board: list
     :param box: last user move (or any other)
     :type box: int
-    :param row: row index
-    :type row: int
     :param edge_size: edge size of the game board
-    :return: list of boxes
+    :return: a tuple of two lists of boxes
     """
-    pass
+    board_size = edge_size*edge_size
+
+    # vector NW-SE
+    nw_se = [
+        box - 2 * edge_size - 2,
+        box - 1 * edge_size - 1,
+        box,
+        box + 1 * edge_size + 1,
+        box + 2 * edge_size + 2,
+    ]
+    print(nw_se)
+    nw_se = filter(lambda x: 0 <= x < board_size, nw_se)
+
+    # vector SW-NE
+    sw_ne = [
+        box + 2 * edge_size - 2,
+        box + 1 * edge_size - 1,
+        box,
+        box - 1 * edge_size + 1,
+        box - 2 * edge_size + 2,
+    ]
+    print(sw_ne)
+    sw_ne = filter(lambda x: edge_size-1 <= x < board_size-(edge_size-1), sw_ne)
+
+    return [board[index] for index in nw_se], [board[index] for index in sw_ne]
 
 
 def check_result(board, edge_size, box, marker):
@@ -129,7 +150,7 @@ def game(players, edge_size):
     :return:
     """
     markers = ['X', 'O']
-    board_size = edge_size*edge_size
+    board_size = edge_size * edge_size
     board = list(range(1, board_size + 1))
     print(draw_board(board, edge_size))
     player = 0
@@ -139,9 +160,9 @@ def game(players, edge_size):
         box = input('>> ')
         if box.isnumeric():
             box = int(box)
-            if isinstance(board[box-1], int):
+            if isinstance(board[box - 1], int):
                 moves += 1
-                board[box-1] = markers[player]
+                board[box - 1] = markers[player]
                 print(draw_board(board, edge_size))
                 if check_result(board, edge_size, box, markers[player]):
                     print('Congratulations {0}! You have won.'.format(players[player]))
@@ -160,6 +181,7 @@ def game(players, edge_size):
 if __name__ == '__main__':
     # TODO input N (minimum 2)
     # TODO add assert and test param imput
+    # TODO display the direction of who won
     # players = ['John', 'Paul'] # TODO set to []
     # player = 1
     # while player < 3:
@@ -169,4 +191,4 @@ if __name__ == '__main__':
     #         players.append(name)
     #         player += 1
 
-    game(['John', 'Paul'], 4)
+    game(['John', 'Paul'], 3)
